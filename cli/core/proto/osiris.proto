@@ -66,7 +66,7 @@ message DescribeRequest {
 }
 
 message DescribeResponse {
-    string function_name = 1;
+    string name = 1;
     string runtime = 2;
     string status = 3;
     string deployed_at = 4;
