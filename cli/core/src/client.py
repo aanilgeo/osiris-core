@@ -1,11 +1,13 @@
-from proto import osiris_pb2
-from proto import osiris_pb2_grpc
+import sys
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
+import osiris_pb2
+import osiris_pb2_grpc
 import grpc
 
 def run():
     # Establish connection to server
     channel = grpc.insecure_channel('localhost:50051')
-    stub = osiris_pb2_grpc.OsirisStub(channel)
+    stub = osiris_pb2_grpc.OsirisServiceStub(channel)
 
     while True:
         print("\nChoose an action:")
@@ -61,7 +63,7 @@ def run():
         elif choice == "5":
             name = input("Enter the function name to describe: ")
             response = stub.DescribeFunction(
-                osiris_pb2.DescribeRequest(name=name)
+                osiris_pb2.DescribeRequest(function_name=name)
             )
             print(f"DescribeFunction Response: Name: {response.name}, Runtime: {response.runtime}, Status: {response.status}")
 

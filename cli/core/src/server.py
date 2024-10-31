@@ -37,14 +37,14 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
             yield osiris_pb2.FunctionInfo(name=name, runtime=info['runtime'], status=info['status'])
 
     def DescribeFunction(self, request, context):
-        if request.name in functions:
-            info = functions[request.name]
+        if request.function_name in functions:
+            info = functions[request.function_name]
             return osiris_pb2.DescribeResponse(
-                name=request.name,
+                name=request.function_name,
                 runtime=info['runtime'],
                 status=info['status']
             )
-        return osiris_pb2.DescribeResponse(name=request.name, runtime="", status="not found")
+        return osiris_pb2.DescribeResponse(name=request.function_name, runtime="", status="not found")
 
     def GetLogs(self, request, context):
         if request.name in functions:
