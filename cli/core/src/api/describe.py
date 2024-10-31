@@ -1,14 +1,16 @@
-from proto import osiris_pb2
-from proto import osiris_pb2_grpc
+import sys
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
+import osiris_pb2
+import osiris_pb2_grpc
 import grpc
 
 class DescribeFunction:
 
     @staticmethod
     def describe_function(stub, function_name):
-        try:
+        # try:
             # Build the request with the function name
-            request = osiris_pb2.DescribeRequest(name=function_name)
+            request = osiris_pb2.DescribeRequest(function_name=function_name)
             
             # Call the DescribeFunction endpoint on the server
             response = stub.DescribeFunction(request)
@@ -25,14 +27,14 @@ class DescribeFunction:
             # Return the response for further use or testing
             return response
             
-        except grpc.RpcError as e:
-            print(f"An error occurred while describing the function: {e}")
-            return None
+        # except grpc.RpcError as e:
+        #     print(f"An error occurred while describing the function: {e}")
+        #     return None
 
 if __name__ == "__main__":
     # Connect to the server
     with grpc.insecure_channel('localhost:50051') as channel:
-        stub = osiris_pb2_grpc.OsirisStub(channel)
+        stub = osiris_pb2_grpc.OsirisServiceStub(channel)
         
         # Example usage of DescribeFunction for a function named 'addNumbers'
         DescribeFunction.describe_function(stub, "addNumbers")
