@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
+sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/proto')
 from concurrent import futures
 import grpc
 import time

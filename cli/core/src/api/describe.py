@@ -1,14 +1,20 @@
 import sys
-sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
+sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/proto')
 import osiris_pb2
 import osiris_pb2_grpc
 import grpc
+
+import os
+
+# Suppress logging warnings
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
 
 class DescribeFunction:
 
     @staticmethod
     def describe_function(stub, function_name):
-        # try:
+        try:
             # Build the request with the function name
             request = osiris_pb2.DescribeRequest(function_name=function_name)
             
@@ -27,9 +33,13 @@ class DescribeFunction:
             # Return the response for further use or testing
             return response
             
-        # except grpc.RpcError as e:
-        #     print(f"An error occurred while describing the function: {e}")
-        #     return None
+        except grpc.RpcError as e:
+            if e.code() == grpc.StatusCode.UNAVAILABLE:
+                return None
+            else:
+                # Handle other gRPC errors
+                print(f"An unknown error occurred: {e}")
+                return None
 
 if __name__ == "__main__":
     # Connect to the server
