@@ -1,13 +1,16 @@
-from proto import osiris_pb2
-from proto import osiris_pb2_grpc
+import sys
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
 from concurrent import futures
 import grpc
 import time
 
+import osiris_pb2
+import osiris_pb2_grpc
+
 # Acts as an in-memory storage for the lifecycle of each function
 functions = {}
 
-class OsirisServicer(osiris_pb2_grpc.OsirisServicer):
+class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
 
     def DeployFunction(self, request, context):
         functions[request.name] = {
@@ -69,7 +72,7 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServicer):
 # Main function to start the server
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    osiris_pb2_grpc.add_OsirisServicer_to_server(OsirisServicer(), server)
+    osiris_pb2_grpc.add_OsirisServiceServicer_to_server(OsirisServicer(), server)
     server.add_insecure_port('[::]:50051')
     server.start()
     print("Server started at port 50051")
