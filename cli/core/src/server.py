@@ -13,18 +13,20 @@ functions = {}
 class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
 
     def DeployFunction(self, request, context):
-        functions[request.name] = {
-            'path': request.path_to_function_code,
-            'runtime': request.runtime_environment,
-            'status': 'deployed'
-        }
-        return osiris_pb2.DeployResponse(message=f'Function "{request.name}" deployed successfully.')
+        if request.function_name not in functions:
+            functions[request.function_name] = {
+                'path': request.path_to_function_code,
+                'runtime': request.runtime_environment,
+                'status': 'deployed'
+            }
+            return osiris_pb2.DeployResponse(success=True, message=f'Function {request.function_name} deployed successfully.')
+        return osiris_pb2.DeployResponse(success=False, message=f'Function {request.function_name} already exists.')
 
     def UpdateFunction(self, request, context):
-        if request.name in functions:
-            functions[request.name]['path'] = request.path_to_function_code
-            return osiris_pb2.UpdateResponse(message=f'Function "{request.name}" updated successfully.')
-        return osiris_pb2.UpdateResponse(message=f'Function "{request.name}" not found.')
+        if request.function_name in functions:
+            functions[request.function_name]['path'] = request.path_to_function_code
+            return osiris_pb2.UpdateResponse(success=True, message=f'Function {request.function_name} updated successfully.')
+        return osiris_pb2.UpdateResponse(success=False, message=f'Function {request.function_name} not found.')
 
     def RemoveFunction(self, request, context):
         if request.name in functions:
