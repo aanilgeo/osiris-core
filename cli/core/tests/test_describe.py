@@ -1,7 +1,7 @@
 import sys
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/proto')
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/src')
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/src/api')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src/api')
 import unittest
 import osiris_pb2
 import osiris_pb2_grpc
