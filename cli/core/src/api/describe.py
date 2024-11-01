@@ -26,7 +26,7 @@ class DescribeFunction:
                 print(f"Function '{function_name}' not found.")
             else:
                 print(f"Function Details for '{function_name}':")
-                print(f"Name: {response.name}")
+                print(f"Name: {response.function_name}")
                 print(f"Runtime: {response.runtime}")
                 print(f"Status: {response.status}")
 

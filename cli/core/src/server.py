@@ -42,11 +42,11 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
         if request.function_name in functions:
             info = functions[request.function_name]
             return osiris_pb2.DescribeResponse(
-                name=request.function_name,
+                function_name=request.function_name,
                 runtime=info['runtime'],
                 status=info['status']
             )
-        return osiris_pb2.DescribeResponse(name=request.function_name, runtime="", status="not found")
+        return osiris_pb2.DescribeResponse(function_name=request.function_name, runtime="", status="not found")
 
     def GetLogs(self, request, context):
         if request.name in functions:
