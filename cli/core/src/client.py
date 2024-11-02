@@ -1,5 +1,5 @@
 import sys
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/proto')
+sys.path.append('C:/Users/jrcud/CS490/osiris-core/cli/core/proto')
 import osiris_pb2
 import osiris_pb2_grpc
 import grpc
