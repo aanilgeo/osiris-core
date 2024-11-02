@@ -1,5 +1,5 @@
 import sys
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/proto')
+sys.path.append('C:/Users/harsh/osiris-core/cli/core/proto')
 import osiris_pb2
 import osiris_pb2_grpc
 import grpc
@@ -31,18 +31,18 @@ def run():
             response = stub.DeployFunction(
                 osiris_pb2.DeployRequest(
                     path_to_function_code=path,
-                    name=name,
+                    function_name=name,
                     runtime_environment=runtime
                 )
             )
-            print("DeployFunction Response:", response.message)
+            print("DeployFunction Response:", response)
 
         elif choice == "2":
             name = input("Enter the function name to update: ")
             path = input("Enter the new path to function code: ")
             response = stub.UpdateFunction(
                 osiris_pb2.UpdateRequest(
-                    name=name,
+                    function_name=name,
                     path_to_function_code=path
                 )
             )
@@ -51,14 +51,14 @@ def run():
         elif choice == "3":
             name = input("Enter the function name to remove: ")
             response = stub.RemoveFunction(
-                osiris_pb2.RemoveRequest(name=name)
+                osiris_pb2.RemoveRequest(function_name=name)
             )
             print("RemoveFunction Response:", response.message)
 
         elif choice == "4":
             print("Listing Functions:")
             for function in stub.ListFunctions(osiris_pb2.ListRequest()):
-                print(f"Function Name: {function.name}, Runtime: {function.runtime}, Status: {function.status}")
+                print(f"Function Name: {function.function_name}, Runtime: {function.runtime}, Status: {function.status}")
 
         elif choice == "5":
             name = input("Enter the function name to describe: ")
