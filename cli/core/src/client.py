@@ -56,9 +56,10 @@ def run():
             print("RemoveFunction Response:", response.message)
 
         elif choice == "4":
-            print("Listing Functions:")
-            for function in stub.ListFunctions(osiris_pb2.ListRequest()):
-                print(f"Function Name: {function.function_name}, Runtime: {function.runtime}, Status: {function.status}")
+            print("Deployed Functions:")
+            response = stub.ListFunctions(osiris_pb2.ListRequest())
+            for index, function in enumerate(response.functions, 1):
+                print(f"{index}. Function Name: {function.function_name}, Runtime: {function.runtime}, Status: {function.status}")
 
         elif choice == "5":
             name = input("Enter the function name to describe: ")

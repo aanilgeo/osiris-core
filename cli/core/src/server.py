@@ -17,7 +17,7 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
             functions[request.function_name] = {
                 'path': request.path_to_function_code,
                 'runtime': request.runtime_environment,
-                'status': 'deployed'
+                'status': 'running'
             }
             return osiris_pb2.DeployResponse(success=True, message=f'Function {request.function_name} deployed successfully.')
         return osiris_pb2.DeployResponse(success=False, message=f'Function {request.function_name} already exists.')
@@ -35,8 +35,11 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
         return osiris_pb2.RemoveResponse(success=False, message=f'Function "{request.function_name}" not found.')
 
     def ListFunctions(self, request, context):
-        for name, info in functions.items():
-            yield osiris_pb2.FunctionInfo(function_name=name, runtime=info['runtime'], status=info['status'])
+        function_list = [
+            osiris_pb2.FunctionInfo(function_name=name, runtime=info['runtime'], status=info['status'])
+            for name, info in functions.items()
+        ]
+        return osiris_pb2.ListResponse(functions=function_list)
 
     def DescribeFunction(self, request, context):
         if request.function_name in functions:
