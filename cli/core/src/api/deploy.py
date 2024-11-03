@@ -10,25 +10,26 @@ import os
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
 
-class DescribeFunction:
+class DeployFunction:
 
     @staticmethod
-    def describe_function(stub, function_name):
+    def deploy_function(stub, function_name, path, runtime):
         try:
             # Build the request with the function name
-            request = osiris_pb2.DescribeRequest(function_name=function_name)
+            request = osiris_pb2.DeployRequest(
+                function_name = function_name,
+                path_to_function_code = path,
+                runtime_environment = runtime
+            )
             
-            # Call the DescribeFunction endpoint on the server
-            response = stub.DescribeFunction(request)
+            # Call the DeployFunction endpoint on the server
+            response = stub.DeployFunction(request)
             
             # Check if function details were found
-            if response.status == "not found":
-                print(f"Function '{function_name}' not found.")
+            if response.success:
+                print(f"Function '{function_name}' already exists.")
             else:
-                print(f"Function Details for '{function_name}':")
-                print(f"Name: {response.function_name}")
-                print(f"Runtime: {response.runtime}")
-                print(f"Status: {response.status}")
+                print(f"Function '{function_name}' deployed successfully.")
 
             # Return the response for further use or testing
             return response
@@ -46,5 +47,5 @@ if __name__ == "__main__":
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = osiris_pb2_grpc.OsirisServiceStub(channel)
         
-        # Example usage of DescribeFunction for a function named 'addNumbers'
-        DescribeFunction.describe_function(stub, "addNumbers")
+        # Example usage of DeployFunction for a function named 'addNumbers'
+        DeployFunction.deploy_function(stub, "addNumbers")

@@ -31,18 +31,18 @@ def run():
             response = stub.DeployFunction(
                 osiris_pb2.DeployRequest(
                     path_to_function_code=path,
-                    name=name,
+                    function_name=name,
                     runtime_environment=runtime
                 )
             )
-            print("DeployFunction Response:", response.message)
+            print("DeployFunction Response:", response)
 
         elif choice == "2":
             name = input("Enter the function name to update: ")
             path = input("Enter the new path to function code: ")
             response = stub.UpdateFunction(
                 osiris_pb2.UpdateRequest(
-                    name=name,
+                    function_name=name,
                     path_to_function_code=path
                 )
             )
@@ -65,7 +65,11 @@ def run():
             response = stub.DescribeFunction(
                 osiris_pb2.DescribeRequest(function_name=name)
             )
-            print(f"DescribeFunction Response: Name: {response.name}, Runtime: {response.runtime}, Status: {response.status}")
+            print(f"DescribeFunction Response:-")
+            print(f"Function Name: {response.function_name}")
+            print(f"Runtime: {response.runtime}")
+            print(f"Status: {response.status}")
+            print(f"Deployed At: {response.deployed_at}")
 
         elif choice == "6":
             name = input("Enter the function name to get logs: ")

@@ -1,6 +1,7 @@
 import sys
 sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
 from concurrent import futures
+from datetime import datetime
 import grpc
 import time
 
@@ -13,18 +14,21 @@ functions = {}
 class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
 
     def DeployFunction(self, request, context):
-        functions[request.name] = {
-            'path': request.path_to_function_code,
-            'runtime': request.runtime_environment,
-            'status': 'deployed'
-        }
-        return osiris_pb2.DeployResponse(message=f'Function "{request.name}" deployed successfully.')
+        if request.function_name not in functions:
+            functions[request.function_name] = {
+                'path': request.path_to_function_code,
+                'runtime': request.runtime_environment,
+                'status': 'running',
+                'deployed_at': datetime.now().strftime('%Y-%m-%d')
+            }
+            return osiris_pb2.DeployResponse(message=f'Function {request.function_name} deployed successfully.')
+        return osiris_pb2.DeployResponse(message=f'Function {request.function_name} already exists.')
 
     def UpdateFunction(self, request, context):
-        if request.name in functions:
-            functions[request.name]['path'] = request.path_to_function_code
-            return osiris_pb2.UpdateResponse(message=f'Function "{request.name}" updated successfully.')
-        return osiris_pb2.UpdateResponse(message=f'Function "{request.name}" not found.')
+        if request.function_name in functions:
+            functions[request.function_name]['path'] = request.path_to_function_code
+            return osiris_pb2.UpdateResponse(success=True, message=f'Function {request.function_name} updated successfully.')
+        return osiris_pb2.UpdateResponse(success=False, message=f'Function {request.function_name} not found.')
 
     def RemoveFunction(self, request, context):
         if request.name in functions:
@@ -40,11 +44,12 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
         if request.function_name in functions:
             info = functions[request.function_name]
             return osiris_pb2.DescribeResponse(
-                name=request.function_name,
+                function_name=request.function_name,
                 runtime=info['runtime'],
-                status=info['status']
+                status=info['status'],
+                deployed_at=info.get('deployed_at', "")
             )
-        return osiris_pb2.DescribeResponse(name=request.function_name, runtime="", status="not found")
+        return osiris_pb2.DescribeResponse(function_name=request.function_name, runtime="", status="not found")
 
     def GetLogs(self, request, context):
         if request.name in functions:
