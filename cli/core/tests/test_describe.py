@@ -30,12 +30,6 @@ class DescribeFunctionTest(unittest.TestCase):
         # Set up the channel and stub for the test client
         cls.channel = grpc.insecure_channel('localhost:50051')
         cls.stub = osiris_pb2_grpc.OsirisServiceStub(cls.channel)
-<<<<<<< HEAD
-        
-        # Deploy a function for testing purposes
-=======
-
->>>>>>> api-describe
         DeployFunction.deploy_function(cls.stub, 'testFunction', './functions/sample_function.py', 'python3.8')
 
     @classmethod
