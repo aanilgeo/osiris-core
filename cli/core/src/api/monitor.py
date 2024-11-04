@@ -5,7 +5,7 @@ import osiris_pb2
 import osiris_pb2_grpc
 
 # Add proto directory to system path
-sys.path.append('C:/Users/neelp/osiris-core/cli/core/proto')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
 
 # Suppress logging warnings
 os.environ["GRPC_VERBOSITY"] = "ERROR"
