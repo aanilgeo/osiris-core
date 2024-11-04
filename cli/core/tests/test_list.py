@@ -80,8 +80,4 @@ class ListFunctionsTest(unittest.TestCase):
         self.assertIsNone(response, "Response should be None when server is unreachable")
         
 if __name__ == '__main__':
-<<<<<<< HEAD
     unittest.main()
-=======
-    unittest.main()
->>>>>>> api-remove-list
