@@ -13,6 +13,9 @@ functions = {}
 
 class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
 
+    def __init__(self):
+        self.is_running = False # flag to track platform status
+
     def DeployFunction(self, request, context):
         if request.function_name not in functions:
             functions[request.function_name] = {
@@ -89,10 +92,16 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
 
 
     def StartPlatform(self, request, context):
-        return osiris_pb2.StartResponse(message="Osiris platform started successfully.")
+        if self.is_running:
+            return osiris_pb2.StartResponse(success=False, message="Platform is already running.")
+        self.is_running = True
+        return osiris_pb2.StartResponse(success=True, message="Osiris platform started successfully.")
 
     def StopPlatform(self, request, context):
-        return osiris_pb2.StopResponse(message="Osiris platform stopped successfully.")
+        if not self.is_running:
+            return osiris_pb2.StopResponse(success=False, message="Platform is already stopped.")
+        self.is_running = False
+        return osiris_pb2.StopResponse(success=True, message="Osiris platform stopped successfully.")
 
 # Main function to start the server
 def serve():
