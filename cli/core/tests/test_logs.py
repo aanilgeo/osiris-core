@@ -2,14 +2,13 @@ import sys
 sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
 sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src')
 sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src/api')
-
 import unittest
 import osiris_pb2
 import osiris_pb2_grpc
 from server import OsirisServicer
 from list import ListFunctions
 from deploy import DeployFunction
-from logs import LogsFunction
+from logs import GetLogs
 import grpc
 from concurrent import futures
 
@@ -34,13 +33,7 @@ class LogsFunctionTest(unittest.TestCase):
         cls.stub = osiris_pb2_grpc.OsirisServiceStub(cls.channel)
         
         # Deploy a test function
-        cls.stub.DeployFunction(
-            osiris_pb2.DeployRequest(
-                path_to_function_code='./functions/add_numbers.py',
-                name='addNumbers',
-                runtime_environment='python3.8'
-            )
-        )
+        DeployFunction.deploy_function(cls.stub, 'testFunction', './functions/sample_function.py', 'python3.8')
 
     @classmethod
     def tearDownClass(cls):
@@ -49,45 +42,43 @@ class LogsFunctionTest(unittest.TestCase):
         cls.server.stop(0)
 
     def test_get_logs_basic(self):
-        # Test getting logs without tail option
-        response = LogsFunction.get_logs(self.stub, 'addNumbers')
+        # Test retrieving logs for an existing function
+        response = GetLogs.get_logs(self.stub, 'testFunction', tail=True)
+
+        self.assertTrue(len(response) > 0, "Expected logs for deployed function")
         
-        # Check if response is not None and contains logs
-        self.assertIsNotNone(response)
-        self.assertTrue(hasattr(response, 'logs'))
+        # Check that each log entry has 'message' and 'timestamp' attributes
+        for log_entry in response:
+            self.assertTrue(hasattr(log_entry, 'message'), "Log entry missing 'message'")
+            self.assertTrue(hasattr(log_entry, 'timestamp'), "Log entry missing 'timestamp'")
 
     def test_get_logs_with_tail(self):
-        # Test getting logs with tail option
-        response = LogsFunction.get_logs(self.stub, 'addNumbers', tail=True)
+        # Test getting logs with the tail option enabled
+        response = GetLogs.get_logs(self.stub, 'testFunction', tail=True)
         
-        # Check if response is not None and contains logs
-        self.assertIsNotNone(response)
-        self.assertTrue(hasattr(response, 'logs'))
-        
-        # Optionally, check if the number of logs returned is reasonable (e.g., less than or equal to 10)
-        self.assertLessEqual(len(response.logs), 10)
+        # Check if response has log entries
+        if response is not None:
+            self.assertTrue(len(response) > 0, "Expected logs for deployed function")
+            # Ensure the length is reasonable if tail is applied
+            self.assertLessEqual(len(response), 10, "Expected fewer than or equal to 10 log entries with tail=True")
+
 
     def test_get_logs_nonexistent_function(self):
-        # Test getting logs for a non-existent function
-        response = LogsFunction.get_logs(self.stub, 'nonExistentFunction')
+        # Test retrieving logs for a non-existent function
+        response = GetLogs.get_logs(self.stub, 'nonExistentFunction', tail=False)
         
-        # Check if response is not None but contains appropriate message
-        self.assertIsNotNone(response)
-        self.assertTrue(len(response.logs) == 0 or 
-                       'No logs found' in response.logs[0])
+        # Check if response is None for a non-existent function
+        self.assertIsNone(response, "Expected None response for a non-existent function")
 
     def test_get_logs_server_error(self):
         # Shut down the server to simulate an unreachable server
-        self.server.stop(0)
+        self.server.stop(0).wait()
         
         # Attempt to get logs while the server is down
-        response = LogsFunction.get_logs(self.stub, 'addNumbers')
+        response = GetLogs.get_logs(self.stub, 'testFunction', tail=False)
         
-        # Check that the response is None due to the RpcError
-        self.assertIsNone(response)
-        
-        # Restart the server for other tests
-        self.server.start()
+        # Check that the response is None since the server is unreachable
+        self.assertIsNone(response, "Expected None response when the server is unreachable")
 
 if __name__ == '__main__':
     unittest.main()

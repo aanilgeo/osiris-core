@@ -33,9 +33,7 @@ class ListFunctions:
                     print(f"{index}. Function Name: {deployed_func_info.function_name}, Runtime: {deployed_func_info.runtime}, Status: {deployed_func_info.status}")
                     formatted_func_list.append(f"Function Name: {deployed_func_info.function_name}, Runtime: {deployed_func_info.runtime}, Status: {deployed_func_info.status}")
             else:
-                print("No function is deployed.")
-                #For testing
-                return ["No function is deployed."]
+                return []
 
             # Return the functions in a list format for testing
             return formatted_func_list

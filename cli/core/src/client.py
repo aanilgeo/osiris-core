@@ -88,7 +88,6 @@ def run():
                 print(f"{readable_timestamp} - {log_entry.message}")
                 #print(log_entry)
 
-
         elif choice == "7":
             name = input("Enter the function name to monitor: ")
             response = stub.MonitorFunction(
@@ -96,9 +95,9 @@ def run():
             )
             print(f"MonitorFunction Response: CPU Usage: {response.cpu_usage}, Memory Usage: {response.memory_usage}, Execution Time: {response.execution_time}")
             print(f"Function Name: {response.function_name}")
-            print(f"Execution Time: {response.execution_time}ms")
-            print(f"CPU Usage: {response.cpu_usage}%")
-            print(f"Memory Usage: {response.memory_usage}MB")
+            print(f"Execution Time: {response.execution_time}")
+            print(f"CPU Usage: {response.cpu_usage}")
+            print(f"Memory Usage: {response.memory_usage}")
 
         elif choice == "8":
             response = stub.StartPlatform(osiris_pb2.StartRequest())

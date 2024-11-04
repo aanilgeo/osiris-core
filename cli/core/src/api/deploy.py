@@ -48,4 +48,4 @@ if __name__ == "__main__":
         stub = osiris_pb2_grpc.OsirisServiceStub(channel)
         
         # Example usage of DeployFunction for a function named 'addNumbers'
-        DeployFunction.deploy_function(stub, "addNumbers")
+        DeployFunction.deploy_function(stub, "addNumbers", "cli/core/api", "python3.8")

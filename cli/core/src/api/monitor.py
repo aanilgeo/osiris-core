@@ -17,7 +17,7 @@ class MonitorFunction:
     def monitor_function(stub, function_name):
         try:
             # Create the request object with the function name
-            request = osiris_pb2.MonitorRequest(name=function_name)
+            request = osiris_pb2.MonitorRequest(function_name=function_name)
 
             # Call the MonitorFunction endpoint on the server
             response = stub.MonitorFunction(request)
@@ -25,9 +25,9 @@ class MonitorFunction:
             # Display the metrics
             if response.cpu_usage or response.memory_usage or response.execution_time:
                 print(f"Function Name: {function_name}")
-                print(f"Execution Time: {response.execution_time} ms")
-                print(f"CPU Usage: {response.cpu_usage}%")
-                print(f"Memory Usage: {response.memory_usage} MB")
+                print(f"Execution Time: {response.execution_time}")
+                print(f"CPU Usage: {response.cpu_usage}")
+                print(f"Memory Usage: {response.memory_usage}")
             else:
                 print(f"No metrics found for function '{function_name}'.")
 

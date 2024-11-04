@@ -1,28 +1,40 @@
 import sys
-import argparse
+import grpc
+import os
+import datetime
 sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
 import osiris_pb2
 import osiris_pb2_grpc
-import grpc
-from list import ListFunctions
-import datetime
-
+from list import ListFunctions  
 
 # Suppress logging warnings
-import os
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
 
-class OsirisLogs:
+class GetLogs:
 
     @staticmethod
     def get_logs(stub, function_name, tail):
         try:
-            #Get the list of deployed functions
-            deployed_functions = ListFunctions.list_functions(stub) #call the method to get the function list
+            # Get the list of deployed functions as formatted strings
+            deployed_functions = ListFunctions.list_functions(stub)
+            print("Deployed functions from list_functions:", deployed_functions)
+
+            # Check if `deployed_functions` is None
+            if deployed_functions is None:
+                print("Error: Unable to retrieve deployed functions.")
+                return None  # Return None if there's an error fetching deployed functions
+
+            # Extract function names from the formatted strings
+            function_names = []
+            for func in deployed_functions:
+                # Parse each string to extract the function name
+                if "Function Name:" in func:
+                    function_name_part = func.split(",")[0]  # Get the "Function Name: <name>" part
+                    extracted_name = function_name_part.split(":")[1].strip()  # Extract the name itself
+                    function_names.append(extracted_name)
             
-            #check if the function is deployed
-            function_names = [func.function_name for func in deployed_functions] if deployed_functions else []
+            # Check if the function is deployed
             if function_name not in function_names:
                 print(f"Function '{function_name}' is not deployed.")
                 return None
@@ -55,21 +67,10 @@ class OsirisLogs:
                 print(f"An unknown error occurred: {e}")
                 return None
 
-def main():
-    # Create an argument parser
-    parser = argparse.ArgumentParser(description="Retrieve logs for a specific function in the Osiris platform.")
-    parser.add_argument("function_name", type=str, help="The name of the function whose logs are being retrieved.")
-    parser.add_argument("--tail", action="store_true", help="Retrieve the most recent logs.")
-
-    # Parse the command line arguments
-    args = parser.parse_args()
-
-    # Connect to the server
+if __name__ == "__main__":
+    # Connect to the server and call get_logs with a specific function name and tail option
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = osiris_pb2_grpc.OsirisServiceStub(channel)
-
-        # Retrieve logs based on the function name and tail option
-        OsirisLogs.get_logs(stub, args.function_name, args.tail)
-
-if __name__ == "__main__":
-    main()
+        
+        # Example usage of get_logs for a function named 'addNumbers' with tail=True
+        OsirisLogs.get_logs(stub, "addNumbers", tail=True)

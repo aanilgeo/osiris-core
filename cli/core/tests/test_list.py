@@ -63,7 +63,7 @@ class ListFunctionsTest(unittest.TestCase):
         response = ListFunctions.list_functions(self.stub)
         
         #Check if response contains both functions
-        self.assertIn("No function is deployed.", response)
+        self.assertEqual(response, [])
 
         # Check if the response contains the correct details
         self.assertIsNotNone(response, "Response should not be None")

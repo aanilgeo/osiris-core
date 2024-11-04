@@ -24,8 +24,8 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
                 'status': 'running',
                 'deployed_at': datetime.now().strftime('%Y-%m-%d')
             }
-            return osiris_pb2.DeployResponse(message=f'Function {request.function_name} deployed successfully.')
-        return osiris_pb2.DeployResponse(message=f'Function {request.function_name} already exists.')
+            return osiris_pb2.DeployResponse(success=True, message=f'Function {request.function_name} deployed successfully.')
+        return osiris_pb2.DeployResponse(success=False, message=f'Function {request.function_name} already exists.')
 
     def UpdateFunction(self, request, context):
         if request.function_name in functions:

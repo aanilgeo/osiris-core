@@ -1,18 +1,19 @@
 import sys
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src/api')
 import unittest
+import grpc
 from unittest.mock import MagicMock
 import osiris_pb2
 import osiris_pb2_grpc
 from monitor import MonitorFunction
-sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
-sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src')
-sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src/api')
 
 class TestMonitorFunction(unittest.TestCase):
 
     def setUp(self):
         # Mock the gRPC stub
-        self.stub = MagicMock(spec=osiris_pb2_grpc.OsirisServiceStub)
+        self.stub = MagicMock()
 
     def test_monitor_function_success(self):
         # Define a mock response for a successful call
@@ -56,7 +57,9 @@ class TestMonitorFunction(unittest.TestCase):
 
     def test_monitor_function_server_unavailable(self):
         # Simulate a gRPC error for an unavailable server
-        self.stub.MonitorFunction.side_effect = grpc.RpcError("gRPC server is unavailable.")
+        error = grpc.RpcError("gRPC server is unavailable.")
+        error.code = lambda: grpc.StatusCode.UNAVAILABLE  # Define the code method to return UNAVAILABLE status
+        self.stub.MonitorFunction.side_effect = error  # Set the side effect for the stub method to raise this error
 
         # Call the monitor_function method
         metrics = MonitorFunction.monitor_function(self.stub, "addNumbers")
