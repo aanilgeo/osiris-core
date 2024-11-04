@@ -31,14 +31,17 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
         return osiris_pb2.UpdateResponse(success=False, message=f'Function {request.function_name} not found.')
 
     def RemoveFunction(self, request, context):
-        if request.name in functions:
-            del functions[request.name]
-            return osiris_pb2.RemoveResponse(message=f'Function "{request.name}" removed successfully.')
-        return osiris_pb2.RemoveResponse(message=f'Function "{request.name}" not found.')
+        if request.function_name in functions:
+            del functions[request.function_name]
+            return osiris_pb2.RemoveResponse(success=True, message=f'Function "{request.function_name}" removed successfully.')
+        return osiris_pb2.RemoveResponse(success=False, message=f'Function "{request.function_name}" not found.')
 
     def ListFunctions(self, request, context):
-        for name, info in functions.items():
-            yield osiris_pb2.FunctionInfo(name=name, runtime=info['runtime'], status=info['status'])
+        function_list = [
+            osiris_pb2.FunctionInfo(function_name=name, runtime=info['runtime'], status=info['status'])
+            for name, info in functions.items()
+        ]
+        return osiris_pb2.ListResponse(functions=function_list)
 
     def DescribeFunction(self, request, context):
         if request.function_name in functions:
@@ -52,21 +55,38 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
         return osiris_pb2.DescribeResponse(function_name=request.function_name, runtime="", status="not found")
 
     def GetLogs(self, request, context):
-        if request.name in functions:
-            logs = ["Log entry 1", "Log entry 2"]
-            for log in logs:
-                yield osiris_pb2.LogEntry(message=log)
-        else:
-            yield osiris_pb2.LogEntry(message=f"No logs found for function '{request.name}'")
+        # Create an instance of LogsResponse
+        response = osiris_pb2.LogsResponse()
+        log_data = [
+            {"timestamp": 1666246800, "message": "Function started with inputs: 3, 5"},
+            {"timestamp": 1666246810, "message": "Function executed successfully. Result: 8"}
+        ]
+
+        for log in log_data:
+            # Create a LogEntry object
+            log_entry = osiris_pb2.LogEntry(
+                timestamp=log["timestamp"],
+                message=log["message"]
+            )
+            # Append the LogEntry object to the response's logs field
+            response.logs.append(log_entry)
+
+        return response
 
     def MonitorFunction(self, request, context):
-        if request.name in functions:
-            return osiris_pb2.MonitorResponse(
-                cpu_usage="10%",
-                memory_usage="20MB",
-                execution_time="0.5ms"
-            )
-        return osiris_pb2.MonitorResponse(cpu_usage="", memory_usage="", execution_time="")
+        print(f"Received MonitorFunction request for: {request.function_name} (type: {type(request.function_name)})")
+        response = osiris_pb2.MonitorResponse()
+        if request.function_name in functions:
+            response.function_name = request.function_name
+            response.cpu_usage = str(10)
+            response.memory_usage = str(20)
+            response.execution_time = str(0.5)
+            return response
+        else:
+            context.set_code(grpc.StatusCode.NOT_FOUND)
+            context.set_details('Function not found')
+            return response
+
 
     def StartPlatform(self, request, context):
         return osiris_pb2.StartResponse(message="Osiris platform started successfully.")

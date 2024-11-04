@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "./cli/core/proto",
+        "./cli/core/src",
+        "./cli/core/src/api"
+    ]
+}

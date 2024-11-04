@@ -16,8 +16,8 @@ service OsirisService {
 
 // Deploy Function
 message DeployRequest {
-    string path_to_function_code = 1;
-    string function_name = 2;
+    string function_name = 1;
+    string path_to_function_code = 2;
     string runtime_environment = 3;
 }
 
@@ -78,9 +78,15 @@ message LogsRequest {
     bool tail = 2;
 }
 
-message LogsResponse {
-    repeated string logs = 1;
+message LogEntry {
+    int64 timestamp = 1;
+    string message = 2;
 }
+
+message LogsResponse {
+    repeated LogEntry logs = 1; // This is the list of log entries
+}
+
 
 // Monitor Function
 message MonitorRequest {
