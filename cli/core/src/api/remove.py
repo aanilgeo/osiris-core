@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
+sys.path.append('C:/Users/harsh/osiris-core/cli/core/proto')
 import osiris_pb2
 import osiris_pb2_grpc
 import grpc
@@ -10,27 +10,22 @@ import os
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
 
-class DeployFunction:
+class RemoveFunction:
 
     @staticmethod
-    def deploy_function(stub, function_name, path, runtime):
+    def remove_function(stub, function_name):
         try:
             # Build the request with the function name
-            request = osiris_pb2.DeployRequest(
-                function_name = function_name,
-                path_to_function_code = path,
-                runtime_environment = runtime
-            )
+            request = osiris_pb2.RemoveRequest(function_name=function_name)
             
-            # Call the DeployFunction endpoint on the server
-            response = stub.DeployFunction(request)
+            # Call the RemoveFunction endpoint on the server
+            response = stub.RemoveFunction(request)
             
-            # Check if function details were found
             if response.success:
-                print(f"Function '{function_name}' already exists.")
+                print(f'Function "{function_name}" removed successfully.')
             else:
-                print(f"Function '{function_name}' deployed successfully.")
-
+                print(f'Function "{function_name}" not found.')
+                
             # Return the response for further use or testing
             return response
             
@@ -47,5 +42,5 @@ if __name__ == "__main__":
     with grpc.insecure_channel('localhost:50051') as channel:
         stub = osiris_pb2_grpc.OsirisServiceStub(channel)
         
-        # Example usage of DeployFunction for a function named 'addNumbers'
-        DeployFunction.deploy_function(stub, "addNumbers")
+        # Example usage of RemoveFunction for a function named 'addNumbers'
+        RemoveFunction.remove_function(stub, "addNumbers")
