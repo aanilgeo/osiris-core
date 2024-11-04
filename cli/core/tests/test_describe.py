@@ -1,7 +1,7 @@
 import sys
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/proto')
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/src')
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/src/api')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/src/api')
 import unittest
 import osiris_pb2
 import osiris_pb2_grpc
@@ -30,8 +30,12 @@ class DescribeFunctionTest(unittest.TestCase):
         # Set up the channel and stub for the test client
         cls.channel = grpc.insecure_channel('localhost:50051')
         cls.stub = osiris_pb2_grpc.OsirisServiceStub(cls.channel)
+<<<<<<< HEAD
         
         # Deploy a function for testing purposes
+=======
+
+>>>>>>> api-describe
         DeployFunction.deploy_function(cls.stub, 'testFunction', './functions/sample_function.py', 'python3.8')
 
     @classmethod
@@ -40,7 +44,7 @@ class DescribeFunctionTest(unittest.TestCase):
         cls.channel.close()
         cls.server.stop(0)
     
-    def test_describe_function(self):
+    def test_describe_existing_function(self):
         # Use DescribeFunction to make the request and handle responses
         response = DescribeFunction.describe_function(self.stub, 'testFunction')
         
@@ -48,7 +52,7 @@ class DescribeFunctionTest(unittest.TestCase):
         self.assertIsNotNone(response, "Response should not be None")
         self.assertEqual(response.function_name, 'testFunction')
         self.assertEqual(response.runtime, 'python3.8')
-        self.assertEqual(response.status, 'deployed')
+        self.assertEqual(response.status, 'running')
 
     def test_describe_non_existent_function(self):
         # Use DescribeFunction for a non-existent function

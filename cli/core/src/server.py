@@ -1,6 +1,7 @@
 import sys
-sys.path.append('C:/Users/sebia/CS490/osiris-core/cli/core/proto')
+sys.path.append('/Users/HP/NJIT/CS-490/osiris-core/cli/core/proto')
 from concurrent import futures
+from datetime import datetime
 import grpc
 import time
 
@@ -17,10 +18,11 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
             functions[request.function_name] = {
                 'path': request.path_to_function_code,
                 'runtime': request.runtime_environment,
-                'status': 'deployed'
+                'status': 'running',
+                'deployed_at': datetime.now().strftime('%Y-%m-%d')
             }
-            return osiris_pb2.DeployResponse(success=True, message=f'Function {request.function_name} deployed successfully.')
-        return osiris_pb2.DeployResponse(success=False, message=f'Function {request.function_name} already exists.')
+            return osiris_pb2.DeployResponse(message=f'Function {request.function_name} deployed successfully.')
+        return osiris_pb2.DeployResponse(message=f'Function {request.function_name} already exists.')
 
     def UpdateFunction(self, request, context):
         if request.function_name in functions:
@@ -44,7 +46,8 @@ class OsirisServicer(osiris_pb2_grpc.OsirisServiceServicer):
             return osiris_pb2.DescribeResponse(
                 function_name=request.function_name,
                 runtime=info['runtime'],
-                status=info['status']
+                status=info['status'],
+                deployed_at=info.get('deployed_at', "")
             )
         return osiris_pb2.DescribeResponse(function_name=request.function_name, runtime="", status="not found")
 
